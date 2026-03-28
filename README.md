@@ -14,9 +14,11 @@
 [![NASA POWER](https://img.shields.io/badge/NASA-POWER%20API-E03C31?logo=nasa&logoColor=white)](https://power.larc.nasa.gov)
 [![Prithvi-EO](https://img.shields.io/badge/Prithvi--EO-2.0--300M-4285F4)](https://huggingface.co/ibm-nasa-geospatial/Prithvi-EO-2.0-300M)
 
-**AI Mustaqbil 2.0 Hackathon** | Theme 4: Agriculture & Food Security | Hard Tier
+**AI Mustaqbil 2.0 Hackathon**
 
-**Team Mustaqbil** (Ibrahim Samad)
+**Theme 4 — Agriculture & Food Security** | **Challenge: Crop Advisory Multi-Agent System** | **Tier: Hard**
+
+**Team:** Ibrahim Samad
 
 </div>
 
@@ -144,43 +146,111 @@ curl -X POST http://localhost:8000/api/query \
 
 </details>
 
-## How to Run
+## How to Run Locally (Step-by-Step Guide)
 
 ### Prerequisites
 
-- Python 3.12+ and [uv](https://docs.astral.sh/uv/)
-- Node.js 20+ and [pnpm](https://pnpm.io/)
+| Tool | Version | Install |
+|------|---------|---------|
+| Python | 3.12+ | [python.org](https://python.org/downloads/) |
+| uv | Latest | `pip install uv` or [docs.astral.sh/uv](https://docs.astral.sh/uv/) |
+| Node.js | 20+ | [nodejs.org](https://nodejs.org/) |
+| pnpm | 9+ | `npm install -g pnpm` |
+| Git | Latest | [git-scm.com](https://git-scm.com/) |
 
-### Backend
+### Step 1: Clone the Repository
+
+```bash
+git clone https://github.com/Ibrahim4594/Kisan-Sat.git
+cd Kisan-Sat
+```
+
+### Step 2: Get API Keys (Free)
+
+Sign up for these free APIs:
+
+| # | Service | Sign Up Link | Free Tier |
+|---|---------|-------------|-----------|
+| 1 | **Anthropic** (Claude Sonnet 4) | [console.anthropic.com](https://console.anthropic.com/) | Pay per use |
+| 2 | **OpenWeatherMap** | [openweathermap.org/users/sign_up](https://home.openweathermap.org/users/sign_up) | 1,000 calls/day |
+| 3 | **Agromonitoring** | [agromonitoring.com](https://agromonitoring.com/dashboard/new) | 1 polygon free |
+| 4 | **API Ninjas** | [api-ninjas.com/register](https://api-ninjas.com/register) | 10,000 calls/month |
+
+> **NASA POWER API** and **FAO Locust Watch** require NO API keys — they are completely free and open.
+
+### Step 3: Set Up Backend
+
 ```bash
 cd backend
+
+# Install Python dependencies
 uv sync
-cp .env.example .env  # Add your API keys
+
+# Create environment file
+cp .env.example .env
+
+# Edit .env and add your API keys:
+# ANTHROPIC_API_KEY=sk-ant-...
+# OPENWEATHERMAP_API_KEY=your_key_here
+# AGROMONITORING_API_KEY=your_key_here
+# API_NINJAS_API_KEY=your_key_here
+
+# Start the backend server
 uv run uvicorn app.main:app --port 8000
 ```
 
-API docs available at `http://localhost:8000/docs`
+You should see:
+```
+INFO:     Uvicorn running on http://127.0.0.1:8000
+```
 
-### Frontend
+Verify: Open http://localhost:8000/api/health — should return `{"status": "healthy"}`
+
+### Step 4: Set Up Frontend (New Terminal)
+
+Open a **second terminal window** and run:
+
 ```bash
 cd frontend
+
+# Install Node.js dependencies
 pnpm install
+
+# Start the development server
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+You should see:
+```
+▲ Next.js 16.2.1 (Turbopack)
+- Local: http://localhost:3000
+✓ Ready
+```
 
-### Environment Variables
+### Step 5: Use the App
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `ANTHROPIC_API_KEY` | Yes | Claude Sonnet 4 for advisory synthesis |
-| `OPENWEATHERMAP_API_KEY` | Recommended | Real-time weather + 5-day forecast |
-| `AGROMONITORING_API_KEY` | Recommended | NDVI satellite imagery + soil data |
-| `API_NINJAS_API_KEY` | Optional | Live commodity prices |
-| `NASA_EARTHDATA_TOKEN` | Optional | Enhanced satellite data access |
+1. Open **http://localhost:3000** in your browser
+2. Explore the landing page (scroll to see all sections)
+3. Click the **EN | اردو** toggle (bottom-right) to switch languages
+4. Go to **Dashboard** (navbar or `/dashboard`)
+5. Select a **Province** (e.g., Punjab)
+6. Select a **City** (e.g., Multan)
+7. Select a **Crop** (e.g., Wheat)
+8. Click **Get Crop Advisory**
+9. Wait ~60 seconds while 6 AI agents process real satellite data
+10. View results: Weather, Soil, Pest, Market, and full Advisory in English + Urdu
 
-> All agents degrade gracefully when API keys are missing — the system works with partial data and reports confidence scores accordingly.
+### Environment Variables Reference
+
+| Variable | Required | Description | Free Signup |
+|----------|----------|-------------|-------------|
+| `ANTHROPIC_API_KEY` | Yes | Claude Sonnet 4 — advisory synthesis + Urdu | [console.anthropic.com](https://console.anthropic.com/) |
+| `OPENWEATHERMAP_API_KEY` | Recommended | Real-time weather + 5-day forecast | [openweathermap.org](https://home.openweathermap.org/users/sign_up) |
+| `AGROMONITORING_API_KEY` | Recommended | NDVI vegetation index + soil data | [agromonitoring.com](https://agromonitoring.com/dashboard/new) |
+| `API_NINJAS_API_KEY` | Optional | Live global commodity prices | [api-ninjas.com](https://api-ninjas.com/register) |
+| `NASA_EARTHDATA_TOKEN` | Optional | Enhanced satellite imagery access | [earthdata.nasa.gov](https://urs.earthdata.nasa.gov/users/new) |
+
+> **Graceful degradation**: All agents work even without some API keys. The system uses fallback data sources and reports confidence scores accordingly. NASA POWER (weather history) requires NO key.
 
 ## Responsible AI
 
